@@ -6,8 +6,5 @@
 
 body {
   overflow: hidden;
-}
-
-canvas {
-  background: black;
+  color: #1e00ffdc
 }
