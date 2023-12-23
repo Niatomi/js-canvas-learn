@@ -16,7 +16,57 @@ window.onload = () => {
 
 
 class Ball {
-  
+  #ctx
+  #x
+  #y 
+  #radius
+  #velocityX
+  #velocityY
+
+  constructor(ctx, x, y) {
+    this.#ctx = ctx
+    this.#x = x
+    this.#y = y
+    this.#radius = 10
+
+    this.#velocityX = 10
+    this.#velocityY = 10
+  }
+
+  recountVelocity(x2, y2) {
+
+    this.getX() + this.getRadius()
+
+  }
+
+  getX() {
+    return this.#x
+  }
+
+  getY() {
+    return this.#y
+  }
+
+  getRadius() {
+    return this.#radius
+  }
+
+  moveBall() {
+    this.#x += this.#velocityX
+    this.#y += this.#velocityY
+  }
+
+  draw() {
+    this.#ctx.beginPath();
+    this.#ctx.arc(this.#x, this.#y, this.#radius, 0, 2 * Math.PI, false);
+    this.#ctx.fillStyle = 'green';
+    this.#ctx.fill();
+    this.#ctx.lineWidth = 5;
+    this.#ctx.strokeStyle = '#003300';
+    this.#ctx.stroke();
+  }
+
+
 }
 
 class Brick {
@@ -78,7 +128,6 @@ class Bricks {
     
     for (let y = 0; y <= 100; y += 20) {
       for (let x = 0; x < this.#density_x; x += 1) {
-        console.log(x, this.margin + availableXSpace);
         this.#bricks.push(
           new Brick(
             this.#ctx, 
@@ -121,11 +170,15 @@ class Pong {
   }
 
   getX() {
-    return x
+    return this.#x
   }
 
   getY() {
-    return y
+    return this.#y
+  }
+
+  getSize() {
+    return this.#size
   }
 
   draw() {
@@ -162,6 +215,7 @@ class Board {
       this.pongSize, 
       this.#width)
     this.bricks = new Bricks(this.#ctx, 20, 24, this.#width, this.#height)
+    this.ball = new Ball(this.#ctx, 100, 100)
   }
 
   movePong(key) {
@@ -177,13 +231,22 @@ class Board {
     this.#ctx.clearRect(0, 0, this.#width, this.#height)
     this.pong.draw()
     this.bricks.draw()
+    this.ball.draw()
+  }
+
+  #checkBallCollision() {
+    if ((this.ball.getY() - this.ball.getRadius()) === this.pong.getY()) {
+      if (this.ball.getX() > this.pong.getX() && this.ball.getX() < this.pong.getX() + this.pong.getSize())
+      console.log('collided');
+    }
   }
 
   update(timestamp) {
     const delta = timestamp - this.prevTime
     if (delta > this.interval) {
+      this.ball.moveBall()
+      this.#checkBallCollision()
       this.#draw()
-
       this.prevTime = timestamp
     }
     requestAnimationFrame(this.update.bind(this))
